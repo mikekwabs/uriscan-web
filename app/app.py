@@ -2,6 +2,9 @@ import streamlit as st
 from pages.login import login
 
 
+st.set_page_config(page_title="Uriscan")
+
+
 def main():
     if "token" not in st.session_state:
         login()
@@ -30,8 +33,8 @@ def main():
         st.sidebar.page_link("/pages/1_Submissions.py", label="Submissions Queue")
     elif role == "ADMIN":
         st.sidebar.page_link("./pages/1_Submissions.py", label="Submissions Queue")
-        st.sidebar.page_link("./pages/2_Transactions.py", label="Transactions")
-        st.sidebar.page_link("./pages/3_Export.py", label="Export for accountant")
+        st.sidebar.page_link("./pages/2_Export.py", label="Export for accountant")
+        st.sidebar.page_link("./pages/3_Transactions.py", label="Transactions")
 
 if __name__ == "__main__":
     main()

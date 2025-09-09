@@ -56,7 +56,7 @@ def show_submission_detail(submission_id: str):
 
 
 def main():
-    st.title("Submissions")
+    st.title("📨 Submissions In Review")
 
     try:
         submissions = api.get_submissions_in_review(limit=20)
@@ -66,7 +66,7 @@ def main():
             return
         
         #List submissions
-        st.header("Pending Submisssion for Review")
+        st.write(" #### Submissions")
         for sub in submissions:
             
             is_selected = (

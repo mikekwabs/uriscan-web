@@ -46,9 +46,10 @@ def get_transactions_export():
     resp.raise_for_status()
     return resp.json()
 
-def mark_transactions_paid(transaction_id: str):
-    resp = requests.post(f"{API_BASE_URL}/transactions{transaction_id}/paid")
+def mark_transactions_paid_bulk(labtechIds: list[str]):
+    url = f"{API_BASE_URL}/transactions/mark-paid-bulk"
+    payload = {"labtechIds": labtechIds}
+    resp = requests.post(url, json=payload, headers=_auth_headers())
     resp.raise_for_status()
     return resp.json()
-
 

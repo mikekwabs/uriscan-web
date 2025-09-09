@@ -6,7 +6,7 @@ AUTH_BASE_URL = "https://api.knoxxi.net/v1/ckyc/customer/signin"
 
 
 def login():
-    st.title("Uriscan Login")
+    st.title("Login")
 
     email = st.text_input("Email", "")
     password = st.text_input("Password", type="password")
