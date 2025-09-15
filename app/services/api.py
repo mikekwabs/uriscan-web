@@ -24,7 +24,7 @@ def get_submissions_in_review(limit: int = 10, offset: int = 0, labtech_id: str 
 
 
 def get_submission_details(submission_id: str):
-    resp = requests.get(f"{API_BASE_URL}/tests/{submission_id}", headers=_auth_headers())
+    resp = requests.get(f"{API_BASE_URL}/admin/{submission_id}", headers=_auth_headers())
     resp.raise_for_status()
     return resp.json()
 
