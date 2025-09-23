@@ -2,7 +2,7 @@ import requests
 import streamlit as st
 
 
-API_BASE_URL = "http://localhost:8000/"
+API_BASE_URL = "https://api.knoxxi.net/knoxxi-uriscan"
 
 def _auth_headers():
     token = st.session_state.get("token")
