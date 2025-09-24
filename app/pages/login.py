@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-API_BASE_URL = "http://localhost:8000"
+API_BASE_URL = "https://api.knoxxi.net/knoxxi-uriscan"
 AUTH_BASE_URL = "https://api.knoxxi.net/v1/ckyc/customer/signin"
 
 
