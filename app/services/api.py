@@ -8,7 +8,12 @@ def _auth_headers():
     token = st.session_state.get("token")
     if not token:
         raise ValueError("No token found is session state")
-    return {"Authorization": f"Bearer {token}"}
+    return {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Agent": "PostmanRuntime/7.35.0",
+    }
 
 
 

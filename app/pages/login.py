@@ -21,19 +21,20 @@ def login():
                 "requestId": ""
             }
 
-            headers = {
+            login_headers = {
                 "Content-Type": "application/json",
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                        "(KHTML, like Gecko) Chrome/118.0.5993.117 Safari/537.36"
+                        "(KHTML, like Gecko) Chrome/118.0.5993.117 Safari/537.36",
+                "Accept": "application/json"
             }
-            resp = requests.post(
+            login_resp = requests.post(
                 AUTH_BASE_URL,
                 json=payload,
-                headers=headers,
+                headers=login_headers,
                 timeout=10
             )
-            resp.raise_for_status()
-            data = resp.json()
+            login_resp.raise_for_status()
+            data = login_resp.json()
 
             #Grab bearer token and save
             token = data.get("securityToken")
@@ -44,10 +45,19 @@ def login():
             #Save the token in session
             st.session_state["token"] = token
 
+            profile_headers  = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "User-Agent": "PostmanRuntime/7.35.0",
+            }
+
+            profile_url = f"{API_BASE_URL}/labtechs/me"
+
             #Obtain and resolve lab tech role
             profile_resp = requests.get(
-                f"{API_BASE_URL}/labtechs/me",
-                headers={"Authorization": f"Bearer {token}"},
+                profile_url,
+                headers=profile_headers,
                 timeout=10
             )
 
