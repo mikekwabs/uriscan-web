@@ -1,5 +1,7 @@
 import streamlit as st
 from services import api
+from urllib.parse import urlparse
+import re
 
 st.set_page_config(page_title="Submissions Queue", layout="wide")
 
@@ -25,7 +27,8 @@ def show_submission_detail(submission_id: str):
         crops_cols = st.columns(4)
         for i, crop in enumerate(submission.get("padCrops", [])):
             with crops_cols[i % 4]:
-                st.image(crop, caption=f"Pad {i+1}")
+                label = extract_pad_label(crop)
+                st.image(crop, caption=label, width=100)
 
         st.markdown("### Test Results")
         results = submission.get("results")
@@ -53,6 +56,15 @@ def show_submission_detail(submission_id: str):
     except Exception as e:
         st.error(f"Error loading submision detail: {e}")
 
+
+
+def extract_pad_label(url):
+    path = urlparse(url).path
+    filename = path.split("/")[-1]
+
+    base = re.sub(r'^pad_|(_\d+)?\.png(\.png)?$', '', filename, flags=re.IGNORECASE)
+    label = base.replace("_", " ").title()
+    return label
 
 
 def main():
