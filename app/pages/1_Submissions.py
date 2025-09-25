@@ -48,10 +48,26 @@ def show_submission_detail(submission_id: str):
         
         with col2:
             if st.button("Reject", key=f"reject_{submission_id}"):
-                api.reject_submission(submission_id)
-                st.warning("Submission rejected")
-                del st.session_state.selected_submission_id
-                st.rerun()
+                #Flag in session state to show textarea
+                st.session_state[f"show_reject_{submission_id}"] = True
+            
+            #Show text area for rejection
+            if st.session_state.get(f"show_reject_{submission_id}", False):
+                comment = st.text_area(
+                    "Enter rejection comment:",
+                    key=f"reject_comment_{submission_id}",
+                    placeholder="Explain why this submission is rejected.."
+                )
+                
+                if st.button("Confirm Reject", key=f"confirm_reject_{submission_id}"):
+                    if not comment.strip():
+                        st.error("Rejection comment is required.")
+                    else:
+                        api.reject_submission(submission_id, comment=comment)
+                        st.warning("Submission Rejected")
+                        del st.session_state.selected_submission_id
+                        st.session_state[f"show_reject_{submission_id}"] = False
+                        st.rerun()
 
     except Exception as e:
         st.error(f"Error loading submision detail: {e}")

@@ -20,7 +20,6 @@ def main():
         return
     
     
-    
     #Side bar
     st.sidebar.write(f"Logged in as {st.session_state['fullname']}  ({role})")
     if st.sidebar.button("Logout"):

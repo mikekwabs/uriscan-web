@@ -39,8 +39,16 @@ def accept_submission(submission_id: str):
     resp.raise_for_status()
     return resp.json()
 
-def reject_submission(submission_id: str):
-    resp = requests.put(f"{API_BASE_URL}/submissions/{submission_id}/reject", headers=_auth_headers())
+def reject_submission(submission_id: str, comment: str):
+    """
+    Reject a submission with a comment
+    """
+    payload = {"comment": comment }
+    resp = requests.put(
+        f"{API_BASE_URL}/submissions/{submission_id}/reject",
+        headers=_auth_headers(),
+        json=payload
+    )
     resp.raise_for_status()
     return resp.json()
 
