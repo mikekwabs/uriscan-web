@@ -47,27 +47,43 @@ def show_submission_detail(submission_id: str):
                 st.rerun()
         
         with col2:
-            if st.button("Reject", key=f"reject_{submission_id}"):
-                #Flag in session state to show textarea
-                st.session_state[f"show_reject_{submission_id}"] = True
-            
-            #Show text area for rejection
-            if st.session_state.get(f"show_reject_{submission_id}", False):
-                comment = st.text_area(
-                    "Enter rejection comment:",
-                    key=f"reject_comment_{submission_id}",
-                    placeholder="Explain why this submission is rejected.."
+            if f"show_reject_{submission_id}" not in st.session_state:
+                st.session_state[f"show_reject_{submission_id}"] = False
+
+            if not st.session_state[f"show_reject_{submission_id}"]:
+                if st.button("Reject", key=f"reject_{submission_id}"):
+                    st.session_state[f"show_reject_{submission_id}"] = True
+                    st.rerun()
+
+            else:
+                st.markdown('### Select a rejection reason')
+                rejection_reasons = [
+                    "Blurry Image — Please retake the photo with steady hands and ensure the strip is in clear focus.",
+                    "Poor Lighting — The image is too dark/bright. Retake the photo in a well-lit area without glare.",
+                    "Shadows Present — Shadows are covering parts of the strip. Adjust the angle or light source and retake.",
+                    "Strip Not Centered — The strip is not properly centered. Align the strip fully within the frame and retake.",
+                    "Partial Strip Captured — Only part of the strip is visible. Capture the entire strip clearly.",
+                    "Background Interference — Background objects are affecting clarity. Use a plain surface and retake the photo.",
+                    "Angle Distortion — The photo was taken at a slant. Hold the camera directly above the strip and retake.",
+                    "Multiple Objects in Frame — Extra objects are visible. Ensure only the strip is in the frame and retake.",
+                    "Low Resolution — The image is unclear/pixelated. Use the device’s full resolution and retake.",
+                    "Dirty or Wet Strip — The strip is smudged or has excess liquid. Please use a clean, dry strip and retake."
+                ]
+
+                selected_reason = st.radio(
+                    "Choose a reason for rejection:",
+                    rejection_reasons,
+                    key=f"reject_reason_{submission_id}"
                 )
-                
-                if st.button("Confirm Reject", key=f"confirm_reject_{submission_id}"):
-                    if not comment.strip():
-                        st.error("Rejection comment is required.")
-                    else:
-                        api.reject_submission(submission_id, comment=comment)
-                        st.warning("Submission Rejected")
+
+                if st.button("Confirm Rejection", key=f"confirm_reject_{submission_id}"):
+                    if selected_reason:
+                        api.reject_submission(submission_id, selected_reason)
+                        st.warning(f"Submission rejected: {selected_reason}")
                         del st.session_state.selected_submission_id
-                        st.session_state[f"show_reject_{submission_id}"] = False
                         st.rerun()
+                    else:
+                        st.error("Please select a reason")
 
     except Exception as e:
         st.error(f"Error loading submision detail: {e}")
