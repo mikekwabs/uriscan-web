@@ -13,6 +13,15 @@ def show_submission_detail(submission_id: str):
     try:
         submission = api.get_submission_details(submission_id)
 
+        URINE_COLOR_MAP = {
+            "LIGHT_YELLOW": "#FFFACD",   # Light yellow (LemonChiffon)
+            "YELLOW": "#FFFF00",         # Bright yellow
+            "DARK_YELLOW": "#FFD700",    # Golden yellow
+            "AMBER": "#FFBF00",          # Amber
+            "BROWN": "#8B4513",          # SaddleBrown
+            "RED": "#B22222",            # Firebrick red
+        }
+
         submission_info_html = f"""
         <div style="
             background-color:#f8f9fa;
@@ -38,11 +47,13 @@ def show_submission_detail(submission_id: str):
             submission_info_html += "<p style='font-weight:bold;margin-bottom:6px;'>💧 Urine Characteristics</p>"
 
             if urine_color:
+                #look up color from urine color map above
+                color_hex = URINE_COLOR_MAP.get(urine_color.upper(), "#cccccc")
                 submission_info_html += f"""
                 <div style='display:flex;align-items:center;gap:8px;margin-bottom:4px;'>
-                    <div style='width:24px;height:24px;background-color:{urine_color};
+                    <div style='width:24px;height:24px;background-color:{color_hex};
                                 border:1px solid #ccc;border-radius:4px;'></div>
-                    <span><b>Color:</b> {urine_color}</span>
+                    <span><b>Color:</b> {urine_color.replace("_", " ").title()}</span>
                 </div>
                 """
 
@@ -128,7 +139,7 @@ def show_submission_detail(submission_id: str):
             styled_df = (
             df.style
             .hide(axis="index")  # removes the index column
-            .applymap(highlight_match, subset=["Match"])
+            .map(highlight_match, subset=["Match"])
             .set_properties(**{
                 "background-color": "#ffffff",
                 "border": "1px solid #ddd",
@@ -192,11 +203,7 @@ def show_submission_detail(submission_id: str):
                 rejection_reasons = [
                     "Blurry Image — Please retake the photo with steady hands and ensure the strip is in clear focus.",
                     "Poor Lighting — The image is too dark/bright. Retake the photo in a well-lit area without glare.",
-                    "Shadows Present — Shadows are covering parts of the strip. Adjust the angle or light source and retake.",
-                    "Strip Not Centered — The strip is not properly centered. Align the strip fully within the frame and retake.",
-                    "Partial Strip Captured — Only part of the strip is visible. Capture the entire strip clearly.",
                     "Background Interference — Background objects are affecting clarity. Use a plain surface and retake the photo.",
-                    "Angle Distortion — The photo was taken at a slant. Hold the camera directly above the strip and retake.",
                     "Multiple Objects in Frame — Extra objects are visible. Ensure only the strip is in the frame and retake.",
                     "Low Resolution — The image is unclear/pixelated. Use the device’s full resolution and retake.",
                     "Dirty or Wet Strip — The strip is smudged or has excess liquid. Please use a clean, dry strip and retake."
