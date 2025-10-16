@@ -3,6 +3,7 @@ from services import api
 import pandas as pd
 from urllib.parse import urlparse
 import re
+from datetime import datetime
 
 st.set_page_config(page_title="Submissions Queue", layout="wide")
 
@@ -31,7 +32,7 @@ def show_submission_detail(submission_id: str):
             margin-bottom:20px;
         ">
             <p style='margin:4px 0;'><b>🆔 Submission ID:</b> {submission_id}</p>
-            <p style='margin:4px 0;'><b>📅 Created At:</b> {submission['createdAt']}</p>
+            <p style='margin:4px 0;'><b>📅 Created At:</b> {format_timestamp(submission['createdAt'])}</p>
         """
 
         # Add strip brand if available
@@ -227,6 +228,12 @@ def show_submission_detail(submission_id: str):
     except Exception as e:
         st.error(f"Error loading submision detail: {e}")
 
+def format_timestamp(ts_str: str) -> str:
+    try:
+        dt = datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%SZ")
+        return dt.strftime("%b %d, %Y — %I:%M %p UTC")
+    except Exception:
+        return ts_str
 
 
 def extract_pad_label(url):
@@ -251,7 +258,7 @@ def make_submission_card(sub: dict) -> str:
     ">
       <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
         <div><b>🆔 ID:</b> {sub['id']}</div>
-        <div><b>📅 Created:</b> {sub['createdAt']}</div>
+        <div><b>📅 Created:</b> {format_timestamp(sub['createdAt'])}</div>
         <div><b>👨‍🔬 Lab Tech:</b> {labtech}</div>
         {f"<div><b>🏷️ Brand:</b> {brand}</div>" if brand else ""}
       </div>
@@ -275,7 +282,7 @@ def main():
 
             # --- concise, readable expander header
             label = (
-                f"🧾 {sub['id']}  |  📅 {sub['createdAt']}  |  👨‍🔬 "
+                f"🧾 {sub['id']}  |  📅 {format_timestamp(sub['createdAt'])}  |  👨‍🔬 "
                 f"{sub.get('labTechName','Unknown')}"
             )
 
