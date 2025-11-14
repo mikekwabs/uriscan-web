@@ -119,28 +119,16 @@ def show_submission_detail(submission_id: str):
             data = []
             for param, uriscan_val in uriscan_dict.items():
                 lab_val = lab_dict.get(param, "-")
-                match = uriscan_val.strip().lower() == lab_val.strip().lower() if lab_val != "-" else None
                 data.append({
                     "Parameter": param,
-                    "Uriscan Reading": uriscan_val,
-                    "Lab Reading": lab_val,
-                    "Match": "✅" if match else ("⚠️" if lab_val != "-" else "—")
+                    "URS-14EA Reading": uriscan_val,
+                    "MEDITAPE UC-11A Reading": lab_val,
                 })
             df = pd.DataFrame(data)
-
-            def highlight_match(val):
-                if val == "✅":
-                    color = "#d1e7dd"   # light green
-                elif val == "⚠️":
-                    color = "#fff3cd"   # light yellow
-                else:
-                    color = "#f8f9fa"   # light gray
-                return f"background-color: {color}; text-align:center; font-weight:bold;"
 
             styled_df = (
             df.style
             .hide(axis="index")  # removes the index column
-            .map(highlight_match, subset=["Match"])
             .set_properties(**{
                 "background-color": "#ffffff",
                 "border": "1px solid #ddd",
@@ -240,7 +228,7 @@ def extract_pad_label(url):
     path = urlparse(url).path
     filename = path.split("/")[-1]
 
-    base = re.sub(r'^pad_|(_\d+)?\.png(\.png)?$', '', filename, flags=re.IGNORECASE)
+    base = re.sub(r'^pad_|\.png$', '', filename, flags=re.IGNORECASE)
     label = base.replace("_", " ").title()
     return label
 
