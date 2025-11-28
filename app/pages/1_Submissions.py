@@ -106,23 +106,27 @@ def show_submission_detail(submission_id: str):
                 st.image(crop, caption=label, width=100)
 
         #Test Table
-        uriscan_results = submission.get("results", [])
-        lab_reference = submission.get("labReferenceResults", [])
+        uriscan_results = submission.get("urs14eaResults", [])
+        lab_manual_strip_results = submission.get("labStripResults", [])
+        analyzer_results = submission.get("analyzerResults", [])
 
         if uriscan_results:
             st.markdown("### Test Results Comparison")
 
             #Convert both to dict for comparison
             uriscan_dict = {r["parameter"]: r["selectedValue"] for r in uriscan_results }
-            lab_dict = {r["parameter"]: r["selectedValue"] for r in lab_reference } if lab_reference else {}
+            lab_manual_strip_dict = {r["parameter"]: r["selectedValue"] for r in lab_manual_strip_results } 
+            analyzer_results_dict = {r["parameter"]: r["selectedValue"] for r in analyzer_results } if analyzer_results else {}
 
             data = []
             for param, uriscan_val in uriscan_dict.items():
-                lab_val = lab_dict.get(param, "-")
+                lab_manual_test_val = lab_manual_strip_dict.get(param, "-")
+                analyzer_val = analyzer_results_dict.get(param, "-")
                 data.append({
                     "Parameter": param,
                     "URS-14EA Reading": uriscan_val,
-                    "MEDITAPE UC-11A Reading": lab_val,
+                    "URIT Reading": lab_manual_test_val,
+                    "MEDITAPE UC-11A Reading": analyzer_val,
                 })
             df = pd.DataFrame(data)
 
