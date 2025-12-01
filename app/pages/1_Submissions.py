@@ -115,17 +115,16 @@ def show_submission_detail(submission_id: str):
 
             #Convert both to dict for comparison
             uriscan_dict = {r["parameter"]: r["selectedValue"] for r in uriscan_results }
-            lab_manual_strip_dict = {r["parameter"]: r["selectedValue"] for r in lab_manual_strip_results } 
+            # lab_manual_strip_dict = {r["parameter"]: r["selectedValue"] for r in lab_manual_strip_results } 
             analyzer_results_dict = {r["parameter"]: r["selectedValue"] for r in analyzer_results } if analyzer_results else {}
 
             data = []
             for param, uriscan_val in uriscan_dict.items():
-                lab_manual_test_val = lab_manual_strip_dict.get(param, "-")
+                # lab_manual_test_val = lab_manual_strip_dict.get(param, "-")
                 analyzer_val = analyzer_results_dict.get(param, "-")
                 data.append({
                     "Parameter": param,
                     "URS-14EA Reading": uriscan_val,
-                    "URIT Reading": lab_manual_test_val,
                     "MEDITAPE UC-11A Reading": analyzer_val,
                 })
             df = pd.DataFrame(data)
@@ -196,10 +195,7 @@ def show_submission_detail(submission_id: str):
                 rejection_reasons = [
                     "Blurry Image — Please retake the photo with steady hands and ensure the strip is in clear focus.",
                     "Poor Lighting — The image is too dark/bright. Retake the photo in a well-lit area without glare.",
-                    "Background Interference — Background objects are affecting clarity. Use a plain surface and retake the photo.",
-                    "Multiple Objects in Frame — Extra objects are visible. Ensure only the strip is in the frame and retake.",
                     "Low Resolution — The image is unclear/pixelated. Use the device’s full resolution and retake.",
-                    "Dirty or Wet Strip — The strip is smudged or has excess liquid. Please use a clean, dry strip and retake."
                 ]
 
                 selected_reason = st.radio(

@@ -3,6 +3,7 @@ import streamlit as st
 
 
 API_BASE_URL = "https://api.knoxxi.net/knoxxi-uriscan"
+LOCAL_API_BASE_URL = "http://localhost:8000"
 
 def _auth_headers():
     token = st.session_state.get("token")
@@ -63,6 +64,23 @@ def mark_transactions_paid_bulk(labtechIds: list[str]):
     url = f"{API_BASE_URL}/transactions/mark-paid-bulk"
     payload = {"labtechIds": labtechIds}
     resp = requests.post(url, json=payload, headers=_auth_headers())
+    resp.raise_for_status()
+    return resp.json()
+
+#Dashboard
+def get_dashboard_stats(start_date: str, end_date: str):
+    """
+    Fetch dashboard analytics from backend.
+    start_date and end_date must be ISO date strings: "YYYY-MM-DD"
+    """
+    params = {"start_date": start_date, "end_date": end_date}
+
+    resp = requests.get(
+        f"{LOCAL_API_BASE_URL}/dashboard",
+        headers=_auth_headers(),
+        params=params
+    )
+
     resp.raise_for_status()
     return resp.json()
 
