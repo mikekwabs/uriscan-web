@@ -3,7 +3,6 @@ import streamlit as st
 
 
 API_BASE_URL = "https://api.knoxxi.net/knoxxi-uriscan"
-LOCAL_API_BASE_URL = "http://localhost:8000"
 
 def _auth_headers():
     token = st.session_state.get("token")
@@ -76,7 +75,7 @@ def get_dashboard_stats(start_date: str, end_date: str):
     params = {"start_date": start_date, "end_date": end_date}
 
     resp = requests.get(
-        f"{LOCAL_API_BASE_URL}/dashboard",
+        f"{API_BASE_URL}/dashboard",
         headers=_auth_headers(),
         params=params
     )
