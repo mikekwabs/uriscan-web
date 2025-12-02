@@ -196,6 +196,7 @@ def show_submission_detail(submission_id: str):
                     "Blurry Image — Please retake the photo with steady hands and ensure the strip is in clear focus.",
                     "Poor Lighting — The image is too dark/bright. Retake the photo in a well-lit area without glare.",
                     "Low Resolution — The image is unclear/pixelated. Use the device’s full resolution and retake.",
+                    "Multiple strips identified. Capture a single strip for accurate analysis."
                 ]
 
                 selected_reason = st.radio(
