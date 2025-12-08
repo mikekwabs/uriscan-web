@@ -121,7 +121,7 @@ def main():
         st.sidebar.page_link("./pages/submissions.py", label="Pending Submissions")
         st.sidebar.page_link("./pages/export.py", label="Export for accountant")
         st.sidebar.page_link("./pages/transactions.py", label="Transactions")
-        st.sidebar.page_link("./pages/research_dataset.py", label="Research Dataset")
+        # st.sidebar.page_link("./pages/research_dataset.py", label="Research Dataset")
 
 
 if __name__ == "__main__":
