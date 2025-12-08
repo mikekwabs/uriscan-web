@@ -5,22 +5,24 @@ from urllib.parse import urlparse
 import re
 from datetime import datetime
 
-st.set_page_config(page_title="Submissions Queue", layout="wide")
+st.set_page_config(page_title="Pending Submissions ", layout="wide")
 
 
-def show_submission_detail(submission_id: str):
+def show_submission_detail(submission_id: str, mode: str = "review"):
     """Show details of a single submission"""
 
     try:
         submission = api.get_submission_details(submission_id)
 
         URINE_COLOR_MAP = {
-            "LIGHT_YELLOW": "#FFFACD",   # Light yellow (LemonChiffon)
-            "YELLOW": "#FFFF00",         # Bright yellow
-            "DARK_YELLOW": "#FFD700",    # Golden yellow
-            "AMBER": "#FFBF00",          # Amber
-            "BROWN": "#8B4513",          # SaddleBrown
-            "RED": "#B22222",            # Firebrick red
+            "STRAW": "#FDED96",   
+            "PALE_YELLOW": "#FDF892",
+            "YELLOW":  "#FFE127",   
+            "DARK_YELLOW": "#FDC71D",    
+            "AMBER": "#C26D02",          
+            "ORANGE": "#FF9800",         
+            "RED": "#D32F2F",          
+            "BROWN": "#853e0a", 
         }
 
         submission_info_html = f"""
@@ -147,73 +149,88 @@ def show_submission_detail(submission_id: str):
             st.info("No test results available")
 
         #Accept/Reject buttons
-        st.markdown("---")
-        col1, col2 = st.columns([1, 1])
+        if mode == "review":
+            st.markdown("---")
+            col1, col2 = st.columns([1, 1])
 
-        st.markdown("""
-        <style>
-        div[data-testid="column"] > div > button[kind="secondary"] {
-            width: 100%;
-            height: 42px;
-            border-radius: 8px;
-            font-weight: 600 !important;
-            font-size: 15px;
-        }
-        div[data-testid="column"]:first-child button {
-            background-color: #28a745 !important;  /* Accept - Green */
-            color: white !important;
-            border: none !important;
-        }
-        div[data-testid="column"]:last-child button {
-            background-color: #dc3545 !important;  /* Reject - Red */
-            color: white !important;
-            border: none !important;
-        }
-        div[data-testid="column"] > div > button:hover {
-            opacity: 0.85;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+            st.markdown("""
+            <style>
+            div[data-testid="column"] > div > button[kind="secondary"] {
+                width: 100%;
+                height: 42px;
+                border-radius: 8px;
+                font-weight: 600 !important;
+                font-size: 15px;
+            }
+            div[data-testid="column"]:first-child button {
+                background-color: #28a745 !important;  /* Accept - Green */
+                color: white !important;
+                border: none !important;
+            }
+            div[data-testid="column"]:last-child button {
+                background-color: #dc3545 !important;  /* Reject - Red */
+                color: white !important;
+                border: none !important;
+            }
+            div[data-testid="column"] > div > button:hover {
+                opacity: 0.85;
+            }
+            </style>
+            """, unsafe_allow_html=True)
 
-        with col1:
-            if st.button("✅ Accept", key=f"accept_{submission_id}"):
-                api.accept_submission(submission_id)
-                st.success("Submission accepted")
-                del st.session_state.selected_submission_id
-                st.rerun()
-        
-        with col2:
-            if f"show_reject_{submission_id}" not in st.session_state:
-                st.session_state[f"show_reject_{submission_id}"] = False
-
-            if not st.session_state[f"show_reject_{submission_id}"]:
-                if st.button("❌ Reject", key=f"reject_{submission_id}"):
-                    st.session_state[f"show_reject_{submission_id}"] = True
+            with col1:
+                if st.button("✅ Accept", key=f"accept_{submission_id}"):
+                    api.accept_submission(submission_id)
+                    st.success("Submission accepted")
+                    del st.session_state.selected_submission_id
                     st.rerun()
+            
+            with col2:
+                if f"show_reject_{submission_id}" not in st.session_state:
+                    st.session_state[f"show_reject_{submission_id}"] = False
 
-            else:
-                st.markdown('### Select a rejection reason')
-                rejection_reasons = [
-                    "Blurry Image — Please retake the photo with steady hands and ensure the strip is in clear focus.",
-                    "Poor Lighting — The image is too dark/bright. Retake the photo in a well-lit area without glare.",
-                    "Low Resolution — The image is unclear/pixelated. Use the device’s full resolution and retake.",
-                    "Multiple strips identified. Capture a single strip for accurate analysis."
-                ]
-
-                selected_reason = st.radio(
-                    "Choose a reason for rejection:",
-                    rejection_reasons,
-                    key=f"reject_reason_{submission_id}"
-                )
-
-                if st.button("Confirm Rejection", key=f"confirm_reject_{submission_id}"):
-                    if selected_reason:
-                        api.reject_submission(submission_id, selected_reason)
-                        st.warning(f"Submission rejected: {selected_reason}")
-                        del st.session_state.selected_submission_id
+                if not st.session_state[f"show_reject_{submission_id}"]:
+                    if st.button("❌ Reject", key=f"reject_{submission_id}"):
+                        st.session_state[f"show_reject_{submission_id}"] = True
                         st.rerun()
-                    else:
-                        st.error("Please select a reason")
+
+                else:
+                    st.markdown('### Select a rejection reason')
+                    rejection_reasons = [
+                        "Blurry Image — Please retake the photo with steady hands and ensure the strip is in clear focus.",
+                        "Poor Lighting — The image is too dark/bright. Retake the photo in a well-lit area without glare.",
+                        "Low Resolution — The image is unclear/pixelated. Use the device’s full resolution and retake.",
+                        "Multiple strips identified. Capture a single strip for accurate analysis."
+                    ]
+
+                    selected_reason = st.radio(
+                        "Choose a reason for rejection:",
+                        rejection_reasons,
+                        key=f"reject_reason_{submission_id}"
+                    )
+
+                    # Custom text area
+                    custom_comment = st.text_area(
+                        "Or type a custom rejection comment:",
+                        key=f"custom_comment_{submission_id}",
+                        placeholder="Type your specific feedback here…"
+                    )
+
+                    if st.button("Confirm Rejection", key=f"confirm_reject_{submission_id}"):
+                        
+                        final_reason = None
+                        if custom_comment.strip():
+                            final_reason = custom_comment
+                        elif selected_reason:
+                            final_reason = selected_reason
+
+                        if final_reason:
+                            api.reject_submission(submission_id, final_reason)
+                            st.warning(f"Submission rejected: {final_reason}")
+                            del st.session_state.selected_submission_id
+                            st.rerun()
+                        else:
+                            st.error("Please provide a rejection reason — either select one or type a comment.")
 
     except Exception as e:
         st.error(f"Error loading submision detail: {e}")
@@ -299,7 +316,7 @@ def main():
                     st.rerun()
 
                 if is_selected:
-                    show_submission_detail(sub["id"])
+                    show_submission_detail(sub["id"], mode="review")
     except Exception as e:
         st.error(f"Error loading submissions: {e}")
 

@@ -1,14 +1,12 @@
 import streamlit as st
 from pages.login import login
 from services.api import get_dashboard_stats
-from datetime import date, timedelta
 import pandas as pd
 
 st.set_page_config(
     page_title="Uriscan Dashboard",
     layout="wide",
 )
-
 
 def metric_card(title, value, icon=None, color="#4F8BF9"):
     st.markdown(
@@ -33,33 +31,11 @@ def metric_card(title, value, icon=None, color="#4F8BF9"):
     )
 
 
+
 def render_dashboard():
     st.markdown("<h1 style='margin-bottom:5px;'>📊 Uriscan Dashboard</h1>", unsafe_allow_html=True)
-
-    # -----------------------------------------------
-    # FILTERS CARD
-    # -----------------------------------------------
-    with st.container():
-        st.markdown("### 🔍 Filters")
-        filter_col = st.columns([1, 1, 0.5])
-
-        default_end = date.today()
-        default_start = default_end - timedelta(days=6)
-
-        start_date = filter_col[0].date_input("Start Date", default_start)
-        end_date = filter_col[1].date_input("End Date", default_end)
-
-        filter_col[2].write("")  # spacing
-        apply_button = filter_col[2].button("Apply", use_container_width=True)
-
-    st.markdown("---")
-
-    # Fetch Data
-    if start_date > end_date:
-        st.error("Start date cannot be after end date.")
-        return
-
-    stats = get_dashboard_stats(start_date.isoformat(), end_date.isoformat())
+    
+    stats = get_dashboard_stats(None, None)
     if not stats:
         return
 
@@ -135,16 +111,17 @@ def main():
         st.session_state.clear()
         st.rerun()
 
+    #Render UI dashboard
     render_dashboard()
 
     # Role Navigation
     if role == "REVIEWER":
-        st.sidebar.page_link("./pages/Research_Dataset.py", label="Research Dataset")
+        st.sidebar.page_link("./pages/research_dataset.py", label="Research Dataset")
     elif role == "ADMIN":
-        st.sidebar.page_link("./pages/1_Submissions.py", label="Submissions Queue")
-        st.sidebar.page_link("./pages/2_Export.py", label="Export for accountant")
-        st.sidebar.page_link("./pages/3_Transactions.py", label="Transactions")
-        st.sidebar.page_link("./pages/Research_Dataset.py", label="Research Dataset")
+        st.sidebar.page_link("./pages/submissions.py", label="Pending Submissions")
+        st.sidebar.page_link("./pages/export.py", label="Export for accountant")
+        st.sidebar.page_link("./pages/transactions.py", label="Transactions")
+        st.sidebar.page_link("./pages/research_dataset.py", label="Research Dataset")
 
 
 if __name__ == "__main__":

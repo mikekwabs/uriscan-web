@@ -1,3 +1,4 @@
+from typing import Optional
 import requests
 import streamlit as st
 
@@ -82,4 +83,28 @@ def get_dashboard_stats(start_date: str, end_date: str):
 
     resp.raise_for_status()
     return resp.json()
+
+#View accepted & rejected submissions
+def get_admin_submissions(
+        status: Optional[str] = None, 
+        search: Optional[str] = None, 
+        limit: int = 50, 
+        offset: int = 0
+    ):
+    params = {"limit": limit, "offset": offset}
+
+    if status:
+        params["status"] = status
+
+    if search:
+        params["search"] = search
+        
+    resp = requests.get(
+        f"{API_BASE_URL}/admin/submissions",
+        params=params,
+        headers=_auth_headers()
+    )
+    resp.raise_for_status()
+    return resp.json()["results"]
+
 
