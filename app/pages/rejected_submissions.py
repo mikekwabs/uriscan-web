@@ -48,7 +48,6 @@ def main():
             label = (
                  f"🧾 {sub['id']}  |  "
                 f"📅 {format_timestamp(sub['created_at'])}  |  "
-                f"👨‍🔬 {sub.get('labTechName', 'Unknown')}"
             )
 
             with st.expander(label, expanded=is_selected):
