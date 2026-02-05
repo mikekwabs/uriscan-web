@@ -276,11 +276,39 @@ def make_submission_card(sub: dict) -> str:
 def main():
     st.title("📨 Submissions In Review")
 
+    # Initialize pagination state
+    if "submissions_page" not in st.session_state:
+        st.session_state.submissions_page = 0
+    
+    page = st.session_state.submissions_page
+    limit = 50
+    offset = page * limit
+
     try:
-        submissions = api.get_submissions_in_review(limit=20)
+        submissions = api.get_submissions_in_review(limit=limit, offset=offset)
         if not submissions:
             st.info("No submissions available at the moment.")
             return
+
+        # Pagination controls at the top
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col1:
+            if st.button("⬅️ Previous", disabled=(page == 0), use_container_width=True):
+                st.session_state.submissions_page -= 1
+                st.rerun()
+        
+        with col2:
+            st.markdown(
+                f"<div style='text-align:center;padding:8px;'><b>Page {page + 1}</b> (Showing {len(submissions)} submissions)</div>",
+                unsafe_allow_html=True
+            )
+        
+        with col3:
+            if st.button("Next ➡️", disabled=(len(submissions) < limit), use_container_width=True):
+                st.session_state.submissions_page += 1
+                st.rerun()
+
+        st.markdown("---")
 
         for sub in submissions:
             is_selected = (
